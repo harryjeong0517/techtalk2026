@@ -11,10 +11,13 @@
    연결 설정 — Supabase 프로젝트 값 두 개만 넣으면 실제 운영 모드가 됩니다.
    비워 두면 "데모 모드"(이 브라우저 안에서만 동작)로 열립니다.
    ===================================================================== */
+//  ↓↓ 아래 두 줄의 따옴표 "" 안에 값을 넣습니다 (// 뒤 설명글이 아니라 따옴표 안) ↓↓
 window.QV_CONFIG = {
-  SUPABASE_URL: "",   // 예: "https://exetgjhdgvwwmcdyulju.supabase.co/"
-  SUPABASE_KEY: ""    // Publishable key("sb_publishable_mwLJTYvwC4shz8uHZJ1Npw_r4m6Ty8z") 또는 anon key
+  SUPABASE_URL: "https://exetgjhdgvwwmcdyulju.supabase.co",
+  SUPABASE_KEY: "sb_publishable_mwLJTYvwC4shz8uHZJ1Npw_r4m6Ty8z"
 };
+//  예) SUPABASE_URL: "https://abcdefghijkl.supabase.co",
+//      SUPABASE_KEY: "sb_publishable_xxxxxxxx"   (Publishable key 또는 anon key)
 </script>
 
 <style>
@@ -580,7 +583,8 @@ function mount(view, eid){
   document.body.classList.toggle('is-demo', DEMO);
   if (DEMO) $app.appendChild(demoBar());
   var root = h('div'); $app.appendChild(root);
-  if (view === 'vote') mountVote(root, eid);
+  if (view === 'home') root.appendChild(h('div', { class: 'scr-msg' }, '행사장 화면의 QR 코드를 찍어 접속해 주세요.'));
+  else if (view === 'vote') mountVote(root, eid);
   else if (view === 'screen') mountScreen(root, eid);
   else mountAdmin(root, eid);
 }
@@ -606,7 +610,8 @@ function route(){
   var seg = location.pathname.replace(/\/+$/, '').split('/').pop();
   var eid = (qs.get('e') || '').trim();
   var view = qs.get('v') || (VIEWS.indexOf(seg) >= 0 ? seg : '');
-  if (VIEWS.indexOf(view) < 0) view = eid ? 'screen' : 'admin';
+  // 관리자 화면은 /admin(또는 ?v=admin) 주소로만 열린다. 주소만 치고 들어온 참가자에게는 안내만 보인다.
+  if (VIEWS.indexOf(view) < 0) view = eid ? 'screen' : (DEMO ? 'admin' : 'home');
   mount(view, eid);
 }
 
